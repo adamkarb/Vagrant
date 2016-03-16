@@ -1,0 +1,53 @@
+## Install Server Dependencies
+
+# Update Ubuntu
+sudo apt-get update
+
+# Install nginx
+sudo apt-get install -y nginx
+
+# Install mongodb
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+# Install nodejs
+sudo apt-get install -y nodejs
+
+# Link that ho
+sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+# Install npm
+sudo apt-get install -y npm
+
+# Install nvm
+su - vagrant -c "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash"
+
+nvm install stable
+nvm use stable
+
+# Redis
+# Need a better place than root lol
+cd /
+# sudo apt-get install -y build-essential
+# sudo apt-get install -y tcl8.5
+wget http://download.redis.io/redis-stable.tar.gz
+tar xvzf redis-stable.tar.gz
+cd redis-stable
+make
+sudo cp src/redis-server /usr/local/bin/
+sudo cp src/redis-cli /usr/local/bin/
+redis-server --daemonize yes
+
+# Install git
+# sudo apt-get install -y git
+
+# Create symlink to local dir
+mkdir /var/www
+ln -s /vagrant/Auth-Practice/ /var/www/Auth-Practice
+
+# For the players...
+sudo gem install lolcat
+
+sudo npm install -g nodemon
