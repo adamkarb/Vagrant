@@ -3,51 +3,47 @@
 # Update Ubuntu
 sudo apt-get update
 
+# Install git
+sudo apt-get install -y git
+
 # Install nginx
 sudo apt-get install -y nginx
 
 # Install mongodb
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 sudo apt-get update
-sudo apt-get install -y mongodb-org
+sudo apt-get install -y --force-yes mongodb-org
 
-# Install nodejs
+# Install nodejs and friends
 sudo apt-get install -y nodejs
+sudo apt-get install -y npm
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+sudo npm install -g nodemon
+sudo npm install -g pm2
 
-# Link that ho
+# Link node bc it frequents the wrong location
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 
-# Install npm
-sudo apt-get install -y npm
-
-# Install nvm
-su - vagrant -c "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash"
-
-nvm install stable
-nvm use stable
-
 # Redis
-# Need a better place than root lol
-cd /
-# sudo apt-get install -y build-essential
-# sudo apt-get install -y tcl8.5
-wget http://download.redis.io/redis-stable.tar.gz
-tar xvzf redis-stable.tar.gz
+cd /opt
+sudo apt-get install -y build-essential
+sudo apt-get install -y tcl8.5
+sudo wget http://download.redis.io/redis-stable.tar.gz
+sudo tar xvzf redis-stable.tar.gz
 cd redis-stable
-make
-sudo cp src/redis-server /usr/local/bin/
-sudo cp src/redis-cli /usr/local/bin/
-redis-server --daemonize yes
+sudo make
+sudo make install
+cd utils
+sudo ./install_server.sh
+sudo service redis_6379 start
+# Run redis on boot
+sudo update-rc.d redis_6379 defaults
 
-# Install git
-# sudo apt-get install -y git
-
-# Create symlink to local dir
-mkdir /var/www
-ln -s /vagrant/Auth-Practice/ /var/www/Auth-Practice
-
-# For the players...
-sudo gem install lolcat
-
-sudo npm install -g nodemon
+# RabbitMQ
+echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+sudo wget -O- https://www.rabbitmq.com/rabbitmq-signing-key-public.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install -y --force-yes rabbitmq-server
